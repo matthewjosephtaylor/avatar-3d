@@ -2,7 +2,7 @@ import { Canvas } from "@mjtdev/engine";
 import { memo } from "react";
 import { getMicAudio } from "./getMicAudio";
 import { Humanoids } from "./humanoid/Humanoids";
-export const Avatar3d = memo(() => {
+export const Avatar3dVrm = memo(() => {
   return (
     <Canvas
       style={{ maxHeight: "50vh" }}
