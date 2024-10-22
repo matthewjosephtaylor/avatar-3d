@@ -47,7 +47,7 @@ export const fromGltf = async ({
   Lights.getHemisphericLight(scene, "light1", {
     direction: [1, 1, 1],
   });
-  Scenes.toggleInspector(scene);
+  // Scenes.toggleInspector(scene);
   canvas!.onkeyup = (ev) => {
     // ctrl+I
     if (ev.ctrlKey && ev.keyCode === 73) {
@@ -81,5 +81,12 @@ export const fromGltf = async ({
       // model.morph(morphMap);
     },
   });
-  return { destroy: () => {}, humanoid: model };
+  return {
+    destroy: () => {
+      scene.dispose();
+      engine.dispose();
+      anims.destroy();
+    },
+    humanoid: model,
+  };
 };

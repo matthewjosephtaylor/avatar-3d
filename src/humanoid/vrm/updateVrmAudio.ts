@@ -1,5 +1,5 @@
 import type { VRM } from "@pixiv/three-vrm";
-import { calculateVisemeLevels } from "./getVisemeLevels";
+import { calculateVisemeLevels } from "../audio/calculateVisemeLevels";
 import type { VrmState } from "./vrmState";
 
 export const updateVrmAudio = ({
