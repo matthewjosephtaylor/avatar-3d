@@ -6,7 +6,9 @@ interface PhonemeLevelsProps {
   analyserNode?: AnalyserNode;
 }
 
-const PhonemeLevels: React.FC<PhonemeLevelsProps> = ({ analyserNode }) => {
+const PhonemeLevelsDisplay: React.FC<PhonemeLevelsProps> = ({
+  analyserNode,
+}) => {
   const [phonemeData, setPhonemeData] = useState({} as Record<string, number>);
 
   useEffect(() => {
@@ -45,4 +47,4 @@ const PhonemeLevels: React.FC<PhonemeLevelsProps> = ({ analyserNode }) => {
   );
 };
 
-export default PhonemeLevels;
+export default PhonemeLevelsDisplay;

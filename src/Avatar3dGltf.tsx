@@ -1,28 +1,73 @@
-import { Animates, Canvas, type ModelPath } from "@mjtdev/engine";
+import type { PBRMaterial } from "@babylonjs/core";
+import { Animates, Canvas, isDefined, type ModelPath } from "@mjtdev/engine";
 import { Button } from "@mui/material";
 import { Stack } from "@mui/system";
-import { memo, useRef } from "react";
+import { memo, useEffect, useRef } from "react";
 import MorphControls from "./debug/morph/MorphControls";
-import PhonemeLevels from "./debug/viseme/PhonemeLevels";
 import type { Humanoid } from "./humanoid/gltf/frmGltf";
 import { Humanoids } from "./humanoid/Humanoids";
-import type { PBRMaterial } from "@babylonjs/core";
+import {
+  initMeyda,
+  type PhonemeLevels,
+} from "./humanoid/audio/calculateVisemeLevels";
+import PhonemeLevelsDisplay from "./debug/viseme/PhonemeLevelsDisplay";
 
 export const Avatar3dGltf = memo(
   ({
-    analyserNode,
     path,
     showControls,
     showPhonemes,
+    analyserNode,
   }: {
-    analyserNode?: AnalyserNode;
     path: ModelPath;
     showControls?: boolean;
     showPhonemes?: boolean;
+    analyserNode?: AnalyserNode;
   }) => {
     const ref = useRef({
       humanoid: undefined as Humanoid | undefined,
     });
+
+    useEffect(() => {
+      if (!analyserNode) {
+        console.warn("No analyser node provided for MorphControls");
+        return;
+      }
+
+      // let controls drive animations if enabled
+      if (showControls) {
+        return;
+      }
+      if (!ref.current.humanoid) {
+        console.warn("No humanoid found");
+        return;
+      }
+      const morphs = ref.current.humanoid.model.getMorphs();
+
+      const meydaAnalyzer = initMeyda(analyserNode, (levels) => {
+        if (!ref.current.humanoid) {
+          return;
+        }
+        const updatedControls: Record<string, number> = {};
+
+        for (const control of morphs) {
+          const levelKey = control
+            .replace("eCTRLv", "")
+            .toLocaleUpperCase() as keyof PhonemeLevels;
+
+          const level = levels[levelKey];
+          if (isDefined(level)) {
+            updatedControls[control] = Math.max(0, level * 0.2);
+          }
+        }
+        ref.current.humanoid.model.morph(updatedControls);
+      });
+
+      return () => {
+        meydaAnalyzer.stop();
+      };
+    }, [analyserNode, ref.current, showControls]);
+
     return (
       <Stack direction={"row"}>
         {ref.current.humanoid && showControls && (
@@ -102,7 +147,7 @@ export const Avatar3dGltf = memo(
             };
           }}
         />
-        {showPhonemes && <PhonemeLevels analyserNode={analyserNode} />}
+        {showPhonemes && <PhonemeLevelsDisplay analyserNode={analyserNode} />}
       </Stack>
     );
   }

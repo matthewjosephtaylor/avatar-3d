@@ -24,7 +24,7 @@ const MorphControls = ({
 
   useEffect(() => {
     if (!analyserNode) {
-      console.warn("No analyser node provided for MorphControls");
+      console.log("No analyser node provided for MorphControls");
       return;
     }
     // Initialize default values
