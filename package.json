@@ -8,7 +8,7 @@
   "scripts": {
     "start": "vite --strictPort --force --port 7799",
     "build": "EXCLUDE_PUBLIC=true vite build",
-    "build-release": "bun run build && scripts/release.sh"
+    "build-release": "bun run build && scripts/version.sh"
   },
   "devDependencies": {
     "@types/bun": "latest",
