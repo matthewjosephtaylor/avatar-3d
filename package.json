@@ -29,14 +29,16 @@
     "vite-plugin-dts": "^4.3.0"
   },
   "peerDependencies": {
-    "typescript": "^5.6.3"
+    "typescript": "^5.6.3",
+    "react-dom": "^18.3.1",
+    "react-router-dom": "^6.26.1"
   },
   "dependencies": {
     "@babylonjs/core": "^7.5.0",
     "@babylonjs/loaders": "^7.5.0",
     "@emotion/react": "^11.13.3",
     "@emotion/styled": "^11.13.0",
-    "@mjtdev/engine": "/Users/mtaylor/MJT/mjtdev-engine/",
+    "@mjtdev/engine": "https://github.com/matthewjosephtaylor/mjtdev-engine#2024.10.25-1350",
     "@mui/material": "^6.1.4",
     "@mui/system": "^6.1.4",
     "@pixiv/three-vrm": "^3.1.2",
