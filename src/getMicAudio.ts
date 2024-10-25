@@ -1,6 +1,5 @@
-export const getMicAudio = async () => {
+export const getMicAudio = async (deviceId?: string) => {
   const audioCtx = new AudioContext();
-  // setAudioContext(audioCtx);
 
   // Ensure the AudioContext is running (especially in browsers like Chrome)
   if (audioCtx.state === "suspended") {
@@ -8,7 +7,23 @@ export const getMicAudio = async () => {
     console.log("Audio context resumed after user gesture.");
   }
 
-  const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+  // List available microphone devices
+  const devices = await navigator.mediaDevices.enumerateDevices();
+  const mics = devices.filter(device => device.kind === 'audioinput');
+  console.log("Available microphones:", mics);
+
+  // If no deviceId is passed, default to the first microphone
+  const selectedDeviceId = deviceId || mics[0]?.deviceId;
+
+  if (!selectedDeviceId) {
+    throw new Error("No microphone devices available");
+  }
+
+  const stream = await navigator.mediaDevices.getUserMedia({
+    audio: {
+      deviceId: { exact: selectedDeviceId }
+    }
+  });
   console.log("Audio stream captured from microphone:", stream);
 
   // Create MediaStreamSource and AnalyserNode
@@ -17,25 +32,5 @@ export const getMicAudio = async () => {
   analyserNode.fftSize = 2048; // Adjust FFT size for frequency resolution
   source.connect(analyserNode);
 
-  analyserNode.minDecibels = -90; // Capture more detailed low-level audio
-  analyserNode.maxDecibels = -10; // Adjust the dynamic range
-  analyserNode.smoothingTimeConstant = 0.85; // Smoothens the data a bit for visual stability
-
-  // setAnalyserNode(analyser); // Set the analyser node for further processing
-
-  // Function to process audio data from the analyser
-  // const processAudio = () => {
-  //   if (!analyser) return;
-
-  //   const dataArray = new Uint8Array(analyser.frequencyBinCount);
-  //   analyser.getByteFrequencyData(dataArray);
-
-  //   // Log a small portion of frequency data to verify it's working
-  //   // console.log("Frequency data from analyser:", dataArray.slice(0, 10));
-
-  //   requestAnimationFrame(processAudio); // Continue processing on the next frame
-  // };
-
-  // processAudio(); // Start processing the audio data
-  return { audioCtx, stream, analyserNode };
+  return { audioCtx, stream, analyserNode, mics }; // Return mics list for potential UI rendering
 };

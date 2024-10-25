@@ -1,29 +1,37 @@
 import {
-  Animates,
   Babs,
   Cameras,
+  Colors,
   Lights,
   Models,
-  Objects,
   Scenes,
+  type ModelPath,
+  type Tick,
 } from "@mjtdev/engine";
+import { produce } from "immer";
+import { animateBlink, type EyeControls } from "../animation/animateBlink";
 import { updateGltfAudio } from "./updateGltfAudio";
 
+export type Humanoid = Awaited<ReturnType<typeof fromGltf>>;
+
 export const fromGltf = async ({
-  gltfUrl,
+  path,
   canvas,
-  analyserNode,
   idleAnimationUrl,
 }: {
-  gltfUrl: string;
+  path: ModelPath;
   canvas: HTMLCanvasElement;
-  analyserNode?: AnalyserNode;
   idleAnimationUrl?: string;
 }) => {
-  const engine = Babs.createEngine({ canvas });
+  const engine = Babs.createEngine({
+    canvas,
+    premultipliedAlpha: false,
+    antialias: true,
+  });
   const scene = Scenes.createScene(engine);
-  // const light = Lights.getHemisphericLight(scene, "light");
-  // const camera = Cameras.getUniversalCamera(scene, "camera");
+  scene.clearColor = Babs.c4(Colors.from("black").alpha(0).toString());
+  // scene.imageProcessingConfiguration.exposure = 1
+  // scene.imageProcessingConfiguration.toneMappingEnabled = false
 
   const camera = Cameras.getArcRotateCamera(scene, "Camera", {
     alpha: Math.PI / 2,
@@ -33,60 +41,75 @@ export const fromGltf = async ({
   });
   camera.minZ = 0.001;
   camera.inertia = 0;
-  // camera.target = Babs.v3([0, 1, 0]);
-  // setTimeout(() => {
-  //   console.log("camera", camera);
-  //   // camera.alpha = 1.5;
-  //   // camera.beta = 1.5;
-  //   camera.setTarget(Babs.v3([0, 1.67, 0]));
-  //   camera.alpha
-  //   // camera.radius = 0.2;
-  // }, 10000);
-  // camera.position.x
   camera.attachControl(canvas, true);
   Lights.getHemisphericLight(scene, "light1", {
-    direction: [1, 1, 1],
+    direction: [10, 1, 1],
+    intensity: 0.5,
   });
+
+  Lights.getPointLight(scene, "light2", {
+    position: [1, 1, 2],
+    intensity: 15,
+  });
+
   // Scenes.toggleInspector(scene);
   canvas!.onkeyup = (ev) => {
     // ctrl+I
     if (ev.ctrlKey && ev.keyCode === 73) {
       Scenes.toggleInspector(scene);
-      // Inspector.Show(scene, {
-      //   overlay: true, // If you want the inspector as an overlay
-      // });
-      // if (debug) {
-      //   scene.debugLayer.hide();
-      // } else {
-      //   scene.debugLayer.show();
-      // }
     }
   };
 
-  // const hw = Babs.helloWorld(engine);
-  const model = await Models.builder({ path: gltfUrl, scene });
-  // console.log("model", model);
+  const model = await Models.builder({ path: path, scene });
 
-  // const model = await Models.loadDazFigure({
-  //   path: gltfUrl,
-  //   scene,
-  // });
   const morphs = model.getMorphs();
   console.log("morphs", morphs);
-  const anims = Animates.create({
-    ticker: () => {
-      scene.render();
-      updateGltfAudio({ analyserNode, model });
-      // const morphMap = Objects.fromEntries(morphs.map((m) => [m, 1]));
-      // model.morph(morphMap);
+  const state = {
+    audioEnabled: true,
+  };
+  let controlsState: Record<string, number> = {};
+  const controls: EyeControls = {
+    leftClosed: (value: number) => {
+      model.morph({ EyesClosedL: value });
     },
-  });
+    rightClosed: (value: number) => {
+      model.morph({ EyesClosedR: value });
+    },
+    updateState: (updater) => {
+      controlsState = produce(controlsState, updater);
+    },
+    getState: () => {
+      return controlsState;
+    },
+  };
   return {
     destroy: () => {
       scene.dispose();
       engine.dispose();
-      anims.destroy();
     },
-    humanoid: model,
+    model,
+    update: ({
+      tick,
+      analyserNode,
+    }: {
+      tick: Tick;
+      analyserNode?: AnalyserNode;
+    }) => {
+      scene.render();
+      if (state.audioEnabled) {
+        updateGltfAudio({ analyserNode, model });
+      }
+      animateBlink(controls, tick?.deltaMs / 1000);
+    },
+    toggleAudio: () => {
+      state.audioEnabled = !state.audioEnabled;
+    },
+    disableAudio: () => {
+      state.audioEnabled = false;
+    },
+    enableAudio: () => {
+      state.audioEnabled = true;
+    },
+    isAudioEnabled: () => state.audioEnabled,
   };
 };

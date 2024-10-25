@@ -1,11 +1,12 @@
+import { isUndefined } from "@mjtdev/engine";
 import React, { useEffect, useRef, useState } from "react";
 
-interface VisemeGraphProps {
-  viseme: string;
+interface LevelGraphProps {
+  name: string;
   value: number;
 }
 
-const VisemeGraph: React.FC<VisemeGraphProps> = ({ viseme, value }) => {
+const LevelGraph: React.FC<LevelGraphProps> = ({ name, value }) => {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
 
   // Track the dynamic range for scaling
@@ -13,6 +14,9 @@ const VisemeGraph: React.FC<VisemeGraphProps> = ({ viseme, value }) => {
   const [maxValue, setMaxValue] = useState(1);
 
   useEffect(() => {
+    if (isUndefined(value)) {
+      return;
+    }
     // Auto-balance the range by updating min and max based on the current value
     if (value < minValue) setMinValue(value);
     if (value > maxValue) setMaxValue(value);
@@ -24,7 +28,12 @@ const VisemeGraph: React.FC<VisemeGraphProps> = ({ viseme, value }) => {
       const ctx = canvas.getContext("2d", { willReadFrequently: true });
       if (ctx) {
         // Shift the existing data left
-        const imageData = ctx.getImageData(1, 0, canvas.width - 1, canvas.height);
+        const imageData = ctx.getImageData(
+          1,
+          0,
+          canvas.width - 1,
+          canvas.height
+        );
         ctx.putImageData(imageData, 0, 0);
 
         // Clear the rightmost column
@@ -48,13 +57,14 @@ const VisemeGraph: React.FC<VisemeGraphProps> = ({ viseme, value }) => {
 
   return (
     <div>
-      <h4>{viseme}</h4>
+      <h4>{name}</h4>
       <canvas ref={canvasRef} width={300} height={100} />
       <p>
-        Min: {minValue.toFixed(2)} | Max: {maxValue.toFixed(2)} | Current: {value.toFixed(2)}
+        Min: {minValue.toFixed(2)} | Max: {maxValue.toFixed(2)} | Current:{" "}
+        {value.toFixed(2)}
       </p>
     </div>
   );
 };
 
-export default VisemeGraph;
+export default LevelGraph;

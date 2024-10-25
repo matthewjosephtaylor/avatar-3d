@@ -1,92 +1,90 @@
-type VisemeLevels = {
-  aa: number;
-  ee: number;
-  ih: number;
-  oh: number;
-  ou: number;
+import Meyda, { MeydaFeaturesObject } from "meyda";
+import type { MeydaAnalyzer } from "meyda/dist/esm/meyda-wa";
+
+// Define the type for phoneme levels
+export type PhonemeLevels = {
+  AA: number;
+  EE: number;
+  IH: number;
+  OH: number;
+  OU: number;
+  W: number;
+  UW: number;
+  TH: number;
+  T: number;
+  SH: number;
+  S: number;
+  OW: number;
+  M: number;
+  L: number;
+  K: number;
+  IY: number;
+  F: number;
+  ER: number;
+  EH: number;
+  TONGUE_UP_DOWN: number;
+  TONGUE_IN_OUT: number;
+  MOUTH_WIDE_NARROW: number;
+  MOUTH_OPEN: number;
 };
 
-// Helper function for calculating average energy in a frequency range
-const getFrequencyBandEnergy = (
-  start: number,
-  end: number,
-  dataArray: Float32Array,
-  gain: number = 1
-): number => {
-  let sum = 0;
-  for (let i = start; i <= end; i++) {
-    sum += dataArray[i];
-  }
-  return (sum / (end - start + 1)) * gain; // Amplify based on gain
+// Initialize Meyda with a promise that resolves with the analyzer
+export const initMeyda = (
+  analyserNode: AnalyserNode,
+  callback: (phonemeLevels: PhonemeLevels) => void
+): MeydaAnalyzer => {
+  const meydaAnalyzer = Meyda.createMeydaAnalyzer({
+    audioContext: analyserNode.context,
+    source: analyserNode,
+    bufferSize: 512,
+    featureExtractors: [
+      "mfcc",
+      "rms",
+      "spectralCentroid",
+      "spectralFlatness",
+      "energy",
+    ],
+    // callback,
+    callback: (features: Partial<MeydaFeaturesObject>) => {
+      // Pass the features down to be processed as they are ready
+      const phonemeLevels = calculatePhonemeLevels(features);
+      callback(phonemeLevels);
+    },
+  });
+  meydaAnalyzer.start();
+  console.log("Meyda initialized");
+  return meydaAnalyzer;
 };
 
-// Helper function for calculating the time-domain envelope (broad mouth opening)
-const getAmplitudeEnvelope = (
-  dataArray: Float32Array,
-  gain: number = 1
-): number => {
-  let sum = 0;
-  for (let i = 0; i < dataArray.length; i++) {
-    sum += Math.abs(dataArray[i]);
-  }
-  return (sum / dataArray.length) * gain; // Amplify based on gain
-};
+// Function to calculate phoneme levels based on Meyda features
+export function calculatePhonemeLevels(
+  features: Partial<MeydaFeaturesObject>
+): PhonemeLevels {
+  const { mfcc, rms, spectralCentroid } = features;
 
-// Function to calculate viseme levels based on time and frequency domain
-export function calculateVisemeLevels(
-  analyserNode: AnalyserNode
-): VisemeLevels {
-  const bufferLength = analyserNode.frequencyBinCount;
-  const timeDomainData = new Float32Array(bufferLength);
-  const frequencyData = new Float32Array(bufferLength);
-
-  // Get the time-domain data (amplitude)
-  analyserNode.getFloatTimeDomainData(timeDomainData);
-
-  // Get the frequency-domain data (FFT)
-  analyserNode.getFloatFrequencyData(frequencyData);
-
-  // Frequency ranges for visemes (adjusted based on expected phoneme ranges)
-  const lowFreqRange = [0, 2] as const; // ~0-43 Hz for 'aa'
-  const midFreqRange = [3, 7] as const; // ~64-150 Hz for 'oh'
-  const midHighFreqRange = [8, 14] as const; // ~172-300 Hz for 'ih'
-  const highFreqRange = [15, 23] as const; // ~322-500 Hz for 'ee'
-  const lowHighMixRange = [
-    [0, 2],
-    [15, 23],
-  ] as const; // Low + High for 'ou'
-
-  // Adjust the gain to amplify lower input levels
-  const gain = 4.0; // Adjust the gain factor for sensitivity to normal speech levels
-
-  // Calculate viseme levels based on energy
-  const aaLevel = getAmplitudeEnvelope(timeDomainData, gain); // Time-domain for broad mouth opening
-  const eeLevel =
-    getFrequencyBandEnergy(...highFreqRange, frequencyData, gain) / 255;
-  const ihLevel =
-    getFrequencyBandEnergy(...midHighFreqRange, frequencyData, gain) / 255;
-  const ohLevel =
-    getFrequencyBandEnergy(...midFreqRange, frequencyData, gain) / 255;
-
-  // For 'ou', combine low and high frequencies
-  const ouLowEnergy = getFrequencyBandEnergy(
-    ...lowHighMixRange[0],
-    frequencyData,
-    gain
-  );
-  const ouHighEnergy = getFrequencyBandEnergy(
-    ...lowHighMixRange[1],
-    frequencyData,
-    gain
-  );
-  const ouLevel = Math.max(0, (ouLowEnergy + ouHighEnergy) / 510); // Normalize combined bands
-
-  // Return the calculated viseme levels, capped at 1
   return {
-    aa: Math.min(aaLevel, 1),
-    ee: Math.min(eeLevel, 1),
-    ih: Math.min(ihLevel, 1),
-    oh: Math.min(ohLevel, 1),
-    ou: Math.min(ouLevel, 1),
+    AA: rms && mfcc ? Math.min(rms * (mfcc[0] || 0), 1) : 0, // Broad mouth opening
+    EE: mfcc ? Math.min(mfcc[5] || 0, 1) : 0, // High frequency for EE
+    IH: mfcc ? Math.min(mfcc[3] || 0, 1) : 0, // Mid-range frequency for IH
+    OH: mfcc ? Math.min(mfcc[2] || 0, 1) : 0, // Lower mid-range for OH
+    OU: mfcc ? Math.min((mfcc[0] + mfcc[5]) / 2, 1) : 0, // Combination for OU
+    W: spectralCentroid ? (spectralCentroid > 1500 ? 1 : 0) : 0, // W (rounded)
+    UW: spectralCentroid ? (spectralCentroid > 1000 ? 1 : 0) : 0, // UW
+    TH: spectralCentroid ? (spectralCentroid > 2000 ? 1 : 0) : 0, // TH
+    T: spectralCentroid ? (spectralCentroid > 2500 ? 1 : 0) : 0, // T
+    SH: spectralCentroid ? (spectralCentroid > 5000 ? 1 : 0) : 0, // SH
+    S: spectralCentroid ? (spectralCentroid > 4000 ? 1 : 0) : 0, // S
+    OW: mfcc ? Math.min((mfcc[0] + mfcc[5]) / 2, 1) : 0, // OW
+    M: rms && mfcc ? Math.min(rms * (mfcc[0] || 0), 1) : 0, // M (nasal)
+    L: mfcc ? Math.min(mfcc[2] || 0, 1) : 0, // L (liquid sound)
+    K: spectralCentroid ? (spectralCentroid > 3000 ? 1 : 0) : 0, // K
+    IY: mfcc ? Math.min(mfcc[4] || 0, 1) : 0, // IY
+    F: spectralCentroid ? (spectralCentroid > 6000 ? 1 : 0) : 0, // F
+    ER: mfcc ? Math.min(mfcc[1] || 0, 1) : 0, // ER
+    EH: mfcc ? Math.min(mfcc[2] || 0, 1) : 0, // EH
+    TONGUE_UP_DOWN: mfcc ? Math.min(mfcc[6] || 0, 1) : 0, // Placeholder for tongue movement
+    TONGUE_IN_OUT: spectralCentroid ? (spectralCentroid > 1500 ? 1 : 0) : 0, // Placeholder
+    MOUTH_WIDE_NARROW: rms ? (rms > 0.5 ? 1 : 0) : 0, // Placeholder for mouth wide/narrow
+    MOUTH_OPEN: rms ? (rms > 0.3 ? 1 : 0) : 0, // Placeholder for mouth open
   };
 }

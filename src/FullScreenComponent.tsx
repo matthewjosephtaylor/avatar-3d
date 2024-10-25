@@ -1,8 +1,7 @@
 import { Box, Button, Stack } from "@mui/material";
 import React from "react";
 import { Avatar3dGltf } from "./Avatar3dGltf";
-import MorphControls from "./debug/morph/MorphControls";
-import VisemeLevels from "./debug/viseme/VismeLevels";
+import { useFileAudio } from "./useFileAudio";
 import { useMicAudio } from "./useMicAudio";
 
 const FullScreenComponent = () => {
@@ -10,7 +9,10 @@ const FullScreenComponent = () => {
     show: true,
     morphs: [] as string[],
   });
-  const analyserNode = useMicAudio(state.show);
+  const micAnalyserNode = useMicAudio(state.show);
+  const { analyserNode: fileAnalyserNode, playWavFile } = useFileAudio(
+    state.show
+  );
 
   return (
     <Box
@@ -24,15 +26,22 @@ const FullScreenComponent = () => {
     >
       <Stack>
         <h1>3D Avatar Demo</h1>
-        <Button
-          onClick={() => {
-            setState((s) => ({ ...s, show: true }));
-          }}
-          variant="contained"
-          color="primary"
-        >
-          Start Here
-        </Button>
+        <Stack direction={"row"}>
+          <Button
+            onClick={() => {
+              setState((s) => ({ ...s, show: true }));
+            }}
+          >
+            Start Here
+          </Button>
+          <Button
+            onClick={() => {
+              playWavFile?.("agent-audio-test1.wav");
+            }}
+          >
+            Play Audio File
+          </Button>
+        </Stack>
         {/* {state.show && <Avatar3dVrm />} */}
         <Stack
           style={{ overflow: "auto", width: "80vw", height: "80vh" }}
@@ -41,12 +50,12 @@ const FullScreenComponent = () => {
           {state.show && (
             <Stack direction={"row"}>
               <Avatar3dGltf
-                analyserNode={analyserNode}
-                // onMorphsChanged={(morphs) =>
-                //   setState((s) => ({ ...s, morphs }))
-                // }
+                showControls={true}
+                showPhonemes={true}
+                analyserNode={fileAnalyserNode}
+                // url={"./female8-walk-pose.glb"}
+                path={"./female8-clothed5.glb"}
               />
-              <VisemeLevels analyserNode={analyserNode} />
             </Stack>
           )}
         </Stack>
