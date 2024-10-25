@@ -1,0 +1,57 @@
+/**
+ * A map from Mixamo rig name to VRM Humanoid bone name
+ */
+export declare const mixamoVRMRigMap: {
+    readonly mixamorigHips: "hips";
+    readonly mixamorigSpine: "spine";
+    readonly mixamorigSpine1: "chest";
+    readonly mixamorigSpine2: "upperChest";
+    readonly mixamorigNeck: "neck";
+    readonly mixamorigHead: "head";
+    readonly mixamorigLeftShoulder: "leftShoulder";
+    readonly mixamorigLeftArm: "leftUpperArm";
+    readonly mixamorigLeftForeArm: "leftLowerArm";
+    readonly mixamorigLeftHand: "leftHand";
+    readonly mixamorigLeftHandThumb1: "leftThumbMetacarpal";
+    readonly mixamorigLeftHandThumb2: "leftThumbProximal";
+    readonly mixamorigLeftHandThumb3: "leftThumbDistal";
+    readonly mixamorigLeftHandIndex1: "leftIndexProximal";
+    readonly mixamorigLeftHandIndex2: "leftIndexIntermediate";
+    readonly mixamorigLeftHandIndex3: "leftIndexDistal";
+    readonly mixamorigLeftHandMiddle1: "leftMiddleProximal";
+    readonly mixamorigLeftHandMiddle2: "leftMiddleIntermediate";
+    readonly mixamorigLeftHandMiddle3: "leftMiddleDistal";
+    readonly mixamorigLeftHandRing1: "leftRingProximal";
+    readonly mixamorigLeftHandRing2: "leftRingIntermediate";
+    readonly mixamorigLeftHandRing3: "leftRingDistal";
+    readonly mixamorigLeftHandPinky1: "leftLittleProximal";
+    readonly mixamorigLeftHandPinky2: "leftLittleIntermediate";
+    readonly mixamorigLeftHandPinky3: "leftLittleDistal";
+    readonly mixamorigRightShoulder: "rightShoulder";
+    readonly mixamorigRightArm: "rightUpperArm";
+    readonly mixamorigRightForeArm: "rightLowerArm";
+    readonly mixamorigRightHand: "rightHand";
+    readonly mixamorigRightHandPinky1: "rightLittleProximal";
+    readonly mixamorigRightHandPinky2: "rightLittleIntermediate";
+    readonly mixamorigRightHandPinky3: "rightLittleDistal";
+    readonly mixamorigRightHandRing1: "rightRingProximal";
+    readonly mixamorigRightHandRing2: "rightRingIntermediate";
+    readonly mixamorigRightHandRing3: "rightRingDistal";
+    readonly mixamorigRightHandMiddle1: "rightMiddleProximal";
+    readonly mixamorigRightHandMiddle2: "rightMiddleIntermediate";
+    readonly mixamorigRightHandMiddle3: "rightMiddleDistal";
+    readonly mixamorigRightHandIndex1: "rightIndexProximal";
+    readonly mixamorigRightHandIndex2: "rightIndexIntermediate";
+    readonly mixamorigRightHandIndex3: "rightIndexDistal";
+    readonly mixamorigRightHandThumb1: "rightThumbMetacarpal";
+    readonly mixamorigRightHandThumb2: "rightThumbProximal";
+    readonly mixamorigRightHandThumb3: "rightThumbDistal";
+    readonly mixamorigLeftUpLeg: "leftUpperLeg";
+    readonly mixamorigLeftLeg: "leftLowerLeg";
+    readonly mixamorigLeftFoot: "leftFoot";
+    readonly mixamorigLeftToeBase: "leftToes";
+    readonly mixamorigRightUpLeg: "rightUpperLeg";
+    readonly mixamorigRightLeg: "rightLowerLeg";
+    readonly mixamorigRightFoot: "rightFoot";
+    readonly mixamorigRightToeBase: "rightToes";
+};
