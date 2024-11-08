@@ -5,6 +5,7 @@ import {
   Lights,
   Models,
   Scenes,
+  type ArcRotateCameraOptions,
   type ModelPath,
   type Tick,
 } from "@mjtdev/engine";
@@ -18,10 +19,12 @@ export const fromGltf = async ({
   path,
   canvas,
   idleAnimationUrl,
+  cameraOptions = {},
 }: {
   path: ModelPath;
   canvas: HTMLCanvasElement;
   idleAnimationUrl?: string;
+  cameraOptions?: ArcRotateCameraOptions;
 }) => {
   const engine = Babs.createEngine({
     canvas,
@@ -38,6 +41,7 @@ export const fromGltf = async ({
     beta: Math.PI / 2,
     radius: 0.5,
     target: [0, 1.67, 0],
+    ...cameraOptions,
   });
   camera.minZ = 0.001;
   camera.inertia = 0;

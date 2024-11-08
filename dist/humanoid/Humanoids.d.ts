@@ -9,10 +9,11 @@ export declare const Humanoids: {
         vrm: import('@pixiv/three-vrm').VRM;
         anim: import('@mjtdev/engine').AnimateState;
     }>;
-    fromGltf: ({ path, canvas, idleAnimationUrl, }: {
+    fromGltf: ({ path, canvas, idleAnimationUrl, cameraOptions, }: {
         path: import('@mjtdev/engine').ModelPath;
         canvas: HTMLCanvasElement;
         idleAnimationUrl?: string;
+        cameraOptions?: import('@mjtdev/engine').ArcRotateCameraOptions;
     }) => Promise<{
         destroy: () => void;
         model: import('@mjtdev/engine').ModelBuilder;

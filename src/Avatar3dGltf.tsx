@@ -1,8 +1,14 @@
 import type { PBRMaterial } from "@babylonjs/core";
-import { Animates, Canvas, isDefined, type ModelPath } from "@mjtdev/engine";
+import {
+  Animates,
+  Canvas,
+  isDefined,
+  type ArcRotateCameraOptions,
+  type ModelPath,
+} from "@mjtdev/engine";
 import { Button } from "@mui/material";
-import { Stack } from "@mui/system";
-import { memo, useEffect, useRef } from "react";
+import { Stack, StackProps } from "@mui/system";
+import { memo, useEffect, useRef, useState } from "react";
 import MorphControls from "./debug/morph/MorphControls";
 import type { Humanoid } from "./humanoid/gltf/frmGltf";
 import { Humanoids } from "./humanoid/Humanoids";
@@ -18,19 +24,34 @@ export const Avatar3dGltf = memo(
     showControls,
     showPhonemes,
     analyserNode,
-  }: {
+    canvasStyle,
+    canvasWidth,
+    canvasHeight,
+    cameraOptions,
+    ...rest
+  }: StackProps & {
     path: ModelPath;
     showControls?: boolean;
     showPhonemes?: boolean;
     analyserNode?: AnalyserNode;
+    canvasStyle?: React.CSSProperties;
+    canvasWidth?: number;
+    canvasHeight?: number;
+    cameraOptions?: ArcRotateCameraOptions;
   }) => {
     const ref = useRef({
       humanoid: undefined as Humanoid | undefined,
     });
 
+    const [modelLoaded, setModelLoaded] = useState(false);
+
     useEffect(() => {
+      if (!modelLoaded) {
+        console.log("refusing to start audio analysis before model is loaded");
+        return;
+      }
       if (!analyserNode) {
-        console.warn("No analyser node provided for MorphControls");
+        console.log("No analyser node provided for MorphControls");
         return;
       }
 
@@ -39,7 +60,7 @@ export const Avatar3dGltf = memo(
         return;
       }
       if (!ref.current.humanoid) {
-        console.warn("No humanoid found");
+        console.log("No humanoid found");
         return;
       }
       const morphs = ref.current.humanoid.model.getMorphs();
@@ -66,10 +87,10 @@ export const Avatar3dGltf = memo(
       return () => {
         meydaAnalyzer.stop();
       };
-    }, [analyserNode, ref.current, showControls]);
+    }, [analyserNode, ref.current, showControls, modelLoaded]);
 
     return (
-      <Stack direction={"row"}>
+      <Stack direction={"row"} {...rest}>
         {ref.current.humanoid && showControls && (
           <Stack>
             <Button
@@ -98,11 +119,14 @@ export const Avatar3dGltf = memo(
           </Stack>
         )}
         <Canvas
-          style={{ maxHeight: "50vh" }}
+          style={canvasStyle}
+          width={canvasWidth}
+          height={canvasHeight}
           painter={async (canvas) => {
             const humanoid = await Humanoids.fromGltf({
               canvas,
               path: path,
+              cameraOptions,
             });
             console.log("humanoid", humanoid);
             ref.current.humanoid = humanoid;
@@ -140,6 +164,7 @@ export const Avatar3dGltf = memo(
                 humanoid.update({ tick, analyserNode });
               },
             });
+            setModelLoaded(true);
             return () => {
               console.log("disposing scene");
               humanoid.destroy();

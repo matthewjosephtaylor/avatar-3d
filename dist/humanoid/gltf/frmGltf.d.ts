@@ -1,9 +1,10 @@
-import { ModelPath, Tick } from '@mjtdev/engine';
+import { ArcRotateCameraOptions, ModelPath, Tick } from '@mjtdev/engine';
 export type Humanoid = Awaited<ReturnType<typeof fromGltf>>;
-export declare const fromGltf: ({ path, canvas, idleAnimationUrl, }: {
+export declare const fromGltf: ({ path, canvas, idleAnimationUrl, cameraOptions, }: {
     path: ModelPath;
     canvas: HTMLCanvasElement;
     idleAnimationUrl?: string;
+    cameraOptions?: ArcRotateCameraOptions;
 }) => Promise<{
     destroy: () => void;
     model: import('@mjtdev/engine').ModelBuilder;
