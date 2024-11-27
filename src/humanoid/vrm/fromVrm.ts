@@ -19,15 +19,15 @@ export const fromVrm = async ({
   cameraOptions?: VrmCameraOptions;
   idleAnimationUrl?: string;
 }): Promise<Humanoid> => {
-  const { camera, scene, vrm } = await createVrmScene({
+  const { camera, scene, vrm, renderer } = await createVrmScene({
     canvas,
     vrmUrl,
     vrmCameraOptions: cameraOptions,
   });
-  const renderer = new WebGLRenderer({
-    canvas,
-    antialias: true,
-  });
+  // const renderer = new WebGLRenderer({
+  //   canvas,
+  //   antialias: true,
+  // });
 
   const animationMixer = new AnimationMixer(vrm.scene);
   if (idleAnimationUrl) {

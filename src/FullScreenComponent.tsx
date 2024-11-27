@@ -113,10 +113,12 @@ const FullScreenComponent = () => {
                 showControls={true}
                 showPhonemes={true}
                 analyserNode={fileAnalyserNode}
+                canvasWidth={400}
+                canvasHeight={400}
                 vrmCameraOptions={{
-                  frustumSize: 2,
-                  lookAt: [0, 1.5, 0],
-                  position: [0, 1.5, 2],
+                  frustumSize: 1,
+                  lookAt: [0, 1.7, 0],
+                  position: [0, 1.7, 2],
                 }}
                 animationPath="./Idle_2.fbx"
                 path={state.path}

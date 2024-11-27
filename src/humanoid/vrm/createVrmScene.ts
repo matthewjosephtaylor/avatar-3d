@@ -53,8 +53,10 @@ export const createVrmScene = async ({
   const renderer = new WebGLRenderer({
     canvas,
     antialias: true,
+    preserveDrawingBuffer: true,
   });
   renderer.setSize(canvas.width, canvas.height);
+  renderer.setClearColor("grey", 0); // Set clear color to zero alpha (transparent)
 
   const light = new AmbientLight(0xffffff, 1);
   scene.add(light);
