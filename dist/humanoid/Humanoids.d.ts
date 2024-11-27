@@ -1,29 +1,13 @@
 export declare const Humanoids: {
-    fromVrm: ({ vrmUrl, canvas, analyserNode, idleAnimationUrl, }: {
+    fromVrm: ({ vrmUrl, canvas, idleAnimationUrl, cameraOptions, }: {
         vrmUrl: string;
         canvas: HTMLCanvasElement;
-        analyserNode?: AnalyserNode;
+        cameraOptions?: import('./vrm/createVrmScene').VrmCameraOptions;
         idleAnimationUrl?: string;
-    }) => Promise<{
-        destroy: () => void;
-        vrm: import('@pixiv/three-vrm').VRM;
-        anim: import('@mjtdev/engine').AnimateState;
-    }>;
-    fromGltf: ({ path, canvas, idleAnimationUrl, cameraOptions, }: {
+    }) => Promise<import('./gltf/Humanoid').Humanoid>;
+    fromGltf: ({ path, canvas, cameraOptions, }: {
         path: import('@mjtdev/engine').ModelPath;
         canvas: HTMLCanvasElement;
-        idleAnimationUrl?: string;
         cameraOptions?: import('@mjtdev/engine').ArcRotateCameraOptions;
-    }) => Promise<{
-        destroy: () => void;
-        model: import('@mjtdev/engine').ModelBuilder;
-        update: ({ tick, analyserNode, }: {
-            tick: import('@mjtdev/engine').Tick;
-            analyserNode?: AnalyserNode;
-        }) => void;
-        toggleAudio: () => void;
-        disableAudio: () => void;
-        enableAudio: () => void;
-        isAudioEnabled: () => boolean;
-    }>;
+    }) => Promise<import('./gltf/Humanoid').Humanoid>;
 };

@@ -1,19 +1,12 @@
-import { ArcRotateCameraOptions, ModelPath, Tick } from '@mjtdev/engine';
-export type Humanoid = Awaited<ReturnType<typeof fromGltf>>;
-export declare const fromGltf: ({ path, canvas, idleAnimationUrl, cameraOptions, }: {
+import { ArcRotateCameraOptions, ModelBuilder, ModelPath } from '@mjtdev/engine';
+import { PhonemeLevels } from '../audio/calculateVisemeLevels';
+import { Humanoid } from './Humanoid';
+export declare const fromGltf: ({ path, canvas, cameraOptions, }: {
     path: ModelPath;
     canvas: HTMLCanvasElement;
-    idleAnimationUrl?: string;
     cameraOptions?: ArcRotateCameraOptions;
-}) => Promise<{
-    destroy: () => void;
-    model: import('@mjtdev/engine').ModelBuilder;
-    update: ({ tick, analyserNode, }: {
-        tick: Tick;
-        analyserNode?: AnalyserNode;
-    }) => void;
-    toggleAudio: () => void;
-    disableAudio: () => void;
-    enableAudio: () => void;
-    isAudioEnabled: () => boolean;
-}>;
+}) => Promise<Humanoid>;
+export declare const updateGltfPhonemeLevels: ({ model, levels, }: {
+    model: ModelBuilder;
+    levels: PhonemeLevels;
+}) => void;
