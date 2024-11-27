@@ -4,7 +4,7 @@
   "main": "dist/index.umd.js",
   "module": "dist/index.es.js",
   "types": "dist/index.d.ts",
-  "version": "2024.11.27-1322",
+  "version": "2024.11.27-1426",
   "license": "MIT",
   "scripts": {
     "start": "vite --strictPort --force --port 7799",
