@@ -5,6 +5,7 @@
   "module": "dist/index.es.js",
   "types": "dist/index.d.ts",
   "version": "2024.11.8-1700",
+  "license": "MIT",
   "scripts": {
     "start": "vite --strictPort --force --port 7799",
     "build": "EXCLUDE_PUBLIC=true vite build",

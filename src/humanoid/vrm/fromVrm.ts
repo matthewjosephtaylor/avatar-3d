@@ -1,56 +1,83 @@
 import { Animates } from "@mjtdev/engine";
-import { WebGLRenderer, AnimationMixer } from "three";
-import { createVrmScene } from "./createVrmScene";
+import { AnimationMixer, WebGLRenderer } from "three";
+import type { Humanoid } from "../gltf/Humanoid";
+import { createVrmScene, type VrmCameraOptions } from "./createVrmScene";
 import { loadMixamoAnimation } from "./loadMixamoAnimation";
-import { updateVrmAudio } from "./updateVrmAudio";
 import { VrmState } from "./vrmState";
+import { updateVrmAudio } from "./updateVrmAudio";
 
 export const fromVrm = async ({
   vrmUrl,
   canvas,
-  analyserNode,
+  // analyserNode,
   idleAnimationUrl,
+  cameraOptions,
 }: {
   vrmUrl: string;
   canvas: HTMLCanvasElement;
-  analyserNode?: AnalyserNode;
+  // analyserNode?: AnalyserNode;
+  cameraOptions?: VrmCameraOptions;
   idleAnimationUrl?: string;
-}) => {
-  const { camera, scene, vrm } = await createVrmScene({ canvas, vrmUrl });
+}): Promise<Humanoid> => {
+  const { camera, scene, vrm } = await createVrmScene({
+    canvas,
+    vrmUrl,
+    vrmCameraOptions: cameraOptions,
+  });
   const renderer = new WebGLRenderer({
     canvas,
     antialias: true,
   });
 
-  const currentMixer = new AnimationMixer(vrm.scene);
+  const animationMixer = new AnimationMixer(vrm.scene);
   if (idleAnimationUrl) {
     const clip = await loadMixamoAnimation(idleAnimationUrl, vrm);
     console.log("clip", clip);
-    currentMixer.clipAction(clip).play();
+    animationMixer.clipAction(clip).play();
   }
   // await applyIdleAnimations(vrm, idleAnimationUrl
   const vrmState = new VrmState(vrm);
   vrm.scene.position.y = +0.5;
-  const anim = Animates.create({
-    ticker: ({ deltaMs }) => {
-      const deltaSeconds = deltaMs / 1000;
+
+  const destroy = () => {
+    console.log("disposing scene");
+    renderer.dispose();
+  };
+  return {
+    destroy,
+    vrmModel: vrm,
+    updateTick: ({ tick }) => {
+      const deltaSeconds = tick.deltaMs / 1000;
       renderer.render(scene, camera);
       if (vrm) {
         vrm.update(deltaSeconds);
         // applyIdleAnimations(vrm, deltaSeconds);
-        currentMixer.update(deltaSeconds);
-        updateVrmAudio({ vrm, analyserNode, vrmState });
+        animationMixer.update(deltaSeconds);
+        // updateVrmAudio({ vrm, analyserNode, vrmState });
         vrmState.updateState(deltaSeconds);
         // animateBlink(vrm, deltaSeconds);
         // animateExpressions(vrm, deltaSeconds);
       }
     },
-  });
-
-  const destroy = () => {
-    console.log("disposing scene");
-    anim.destroy();
-    renderer.dispose();
+    updatePhonemeLevels: ({ phonemeLevels, analyserNode }) => {
+      // console.log("updating phoneme levels", phonemeLevels);
+      updateVrmAudio({ vrm, vrmState, levels: phonemeLevels, analyserNode });
+    },
+    setAnimation: async (animationUrl) => {
+      const clip = await loadMixamoAnimation(animationUrl, vrm);
+      console.log("clip", clip);
+      animationMixer.stopAllAction();
+      animationMixer.clipAction(clip).play();
+    },
+    setExpression: (expression, value = 0.5) => {
+      if (vrm.expressionManager) {
+        vrm.expressionManager.setValue(expression, value);
+      }
+    },
+    getExpressions: () => {
+      return vrm.expressionManager
+        ? vrm.expressionManager.expressions.map((e) => e.expressionName)
+        : [];
+    },
   };
-  return { destroy, vrm, anim };
 };

@@ -71,8 +71,14 @@ export class VrmState {
     this.expressionTimer += deltaSeconds;
     this.transitionProgress += deltaSeconds / 6;
     this.transitionProgress = Math.min(this.transitionProgress, 1);
+    const expressions = [
+      ...this.expressionGroups.angry,
+      ...this.expressionGroups.happy,
+      ...this.expressionGroups.sad,
+    ];
 
-    Object.keys(this.currentExpressionSet).forEach((expression) => {
+    // Object.keys(this.currentExpressionSet)
+    expressions.forEach((expression) => {
       const currentValue = this.currentExpressionSet[expression];
       const targetValue = this.targetExpressionSet[expression];
       const interpolatedValue =

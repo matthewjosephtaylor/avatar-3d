@@ -1,15 +1,18 @@
 import type { VRM } from "@pixiv/three-vrm";
 // import { calculateVisemeLevels } from "../audio/calculateVisemeLevels";
 import type { VrmState } from "./vrmState";
+import type { PhonemeLevels } from "../audio/calculateVisemeLevels";
 
 export const updateVrmAudio = ({
   vrm,
   analyserNode,
   vrmState,
+  levels,
 }: {
   vrm: VRM;
   analyserNode?: AnalyserNode;
   vrmState: VrmState;
+  levels: PhonemeLevels;
 }) => {
   if (!analyserNode) {
     return;
@@ -27,9 +30,9 @@ export const updateVrmAudio = ({
 
   // console.log("Waveform amplitude:", maxAmplitude);
   // console.log("Calculated volume:", volume);
-  // if (vrm.expressionManager) {
-  //   for (const [key, value] of Object.entries(levels)) {
-  //     vrm.expressionManager.setValue(key, value * 3);
-  //   }
-  // }
+  if (vrm.expressionManager) {
+    for (const [key, value] of Object.entries(levels)) {
+      vrm.expressionManager.setValue(key.toLocaleLowerCase(), value * 0.15);
+    }
+  }
 };

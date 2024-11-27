@@ -2,30 +2,31 @@ import {
   Babs,
   Cameras,
   Colors,
+  isDefined,
   Lights,
   Models,
   Scenes,
   type ArcRotateCameraOptions,
+  type ModelBuilder,
   type ModelPath,
-  type Tick,
 } from "@mjtdev/engine";
 import { produce } from "immer";
 import { animateBlink, type EyeControls } from "../animation/animateBlink";
-import { updateGltfAudio } from "./updateGltfAudio";
-
-export type Humanoid = Awaited<ReturnType<typeof fromGltf>>;
+import type { PhonemeLevels } from "../audio/calculateVisemeLevels";
+import type { Humanoid } from "./Humanoid";
+import { applyGltfModelFixes } from "./applyGltfModelFixes";
 
 export const fromGltf = async ({
   path,
   canvas,
-  idleAnimationUrl,
+  // idleAnimationUrl,
   cameraOptions = {},
 }: {
   path: ModelPath;
   canvas: HTMLCanvasElement;
-  idleAnimationUrl?: string;
+  // idleAnimationUrl?: string;
   cameraOptions?: ArcRotateCameraOptions;
-}) => {
+}): Promise<Humanoid> => {
   const engine = Babs.createEngine({
     canvas,
     premultipliedAlpha: false,
@@ -66,12 +67,9 @@ export const fromGltf = async ({
 
   const model = await Models.builder({ path: path, scene });
 
-  const morphs = model.getMorphs();
-  console.log("morphs", morphs);
-  const state = {
-    audioEnabled: true,
-  };
-  let controlsState: Record<string, number> = {};
+  applyGltfModelFixes(model);
+
+  let eyeControlsState: Record<string, number> = {};
   const controls: EyeControls = {
     leftClosed: (value: number) => {
       model.morph({ EyesClosedL: value });
@@ -80,10 +78,10 @@ export const fromGltf = async ({
       model.morph({ EyesClosedR: value });
     },
     updateState: (updater) => {
-      controlsState = produce(controlsState, updater);
+      eyeControlsState = produce(eyeControlsState, updater);
     },
     getState: () => {
-      return controlsState;
+      return eyeControlsState;
     },
   };
   return {
@@ -91,29 +89,42 @@ export const fromGltf = async ({
       scene.dispose();
       engine.dispose();
     },
-    model,
-    update: ({
-      tick,
-      analyserNode,
-    }: {
-      tick: Tick;
-      analyserNode?: AnalyserNode;
-    }) => {
+    gltfModel: model,
+    updateTick: ({ tick }) => {
       scene.render();
-      if (state.audioEnabled) {
-        updateGltfAudio({ analyserNode, model });
-      }
       animateBlink(controls, tick?.deltaMs / 1000);
     },
-    toggleAudio: () => {
-      state.audioEnabled = !state.audioEnabled;
+    updatePhonemeLevels: ({ analyserNode, phonemeLevels: levels }) => {
+      updateGltfPhonemeLevels({ model, levels });
     },
-    disableAudio: () => {
-      state.audioEnabled = false;
+
+    setAnimation: async (animationUrl) => {},
+    setExpression: (expression, value = 0.5) => {},
+    getExpressions: () => {
+      return [];
     },
-    enableAudio: () => {
-      state.audioEnabled = true;
-    },
-    isAudioEnabled: () => state.audioEnabled,
   };
+};
+
+export const updateGltfPhonemeLevels = ({
+  model,
+  levels,
+}: {
+  model: ModelBuilder;
+  levels: PhonemeLevels;
+}) => {
+  const updatedControls: Record<string, number> = {};
+  const morphs = model.getMorphs();
+
+  for (const control of morphs) {
+    const levelKey = control
+      .replace("eCTRLv", "")
+      .toLocaleUpperCase() as keyof PhonemeLevels;
+
+    const level = levels[levelKey];
+    if (isDefined(level)) {
+      updatedControls[control] = Math.max(0, level * 0.2);
+    }
+  }
+  model.morph(updatedControls);
 };
