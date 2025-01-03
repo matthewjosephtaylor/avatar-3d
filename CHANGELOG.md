@@ -1,6 +1,10 @@
 # Changelog
 
 
+## 2025-01-03
+- update scripts to use pnpm ([4c3f3dd](https://github.com/matthewjosephtaylor/avatar-3d/commit/4c3f3dd693d3e20f4c8fbc5391b46f33c027a47d)) by Matt Taylor
+- introduce pnpm ([9346aaf](https://github.com/matthewjosephtaylor/avatar-3d/commit/9346aaf65fcaba2533d4ebc253657169321127e5)) by Matt Taylor
+
 ## 2025-01-01
 - bump to React 19 and latest mjtdev/engine ([04692f5](https://github.com/matthewjosephtaylor/avatar-3d/commit/04692f54a928ff3cff5f354cda25ae9397f6a4f2)) by Matt Taylor
 
