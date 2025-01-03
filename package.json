@@ -10,7 +10,7 @@
     "start": "vite --strictPort --force --port 7799",
     "build": "EXCLUDE_PUBLIC=true vite build",
     "changelog": "./scripts/changes.sh > CHANGELOG.md",
-    "build-release": "bun run build && scripts/version.sh"
+    "build-release": "pnpm run build && scripts/version.sh"
   },
   "devDependencies": {
     "@types/bun": "latest",
