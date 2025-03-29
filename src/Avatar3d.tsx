@@ -1,10 +1,4 @@
-import {
-  Animates,
-  Canvas,
-  type ArcRotateCameraOptions,
-  type Point3,
-  type Vec3,
-} from "@mjtdev/engine";
+import { type ArcRotateCameraOptions } from "@mjt-engine/babs";
 import { Stack, StackProps } from "@mui/system";
 import {
   forwardRef,
@@ -20,6 +14,8 @@ import { initMeyda } from "./humanoid/audio/calculateVisemeLevels";
 import type { Humanoid } from "./humanoid/gltf/Humanoid";
 import { Humanoids } from "./humanoid/Humanoids";
 import type { VrmCameraOptions } from "./humanoid/vrm/createVrmScene";
+import { Animates } from "@mjt-engine/animate";
+import { Canvas } from "@mjt-engine/reacts";
 
 export type Avatar3dRef = {
   getHumanoid: () => Humanoid | undefined;

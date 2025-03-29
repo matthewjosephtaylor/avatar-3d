@@ -1,4 +1,4 @@
-import { ArcRotateCameraOptions, ModelBuilder, ModelPath } from '@mjtdev/engine';
+import { ArcRotateCameraOptions, ModelBuilder, ModelPath } from '@mjt-engine/babs';
 import { PhonemeLevels } from '../audio/calculateVisemeLevels';
 import { Humanoid } from './Humanoid';
 export declare const fromGltf: ({ path, canvas, cameraOptions, }: {

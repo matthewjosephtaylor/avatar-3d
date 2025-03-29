@@ -1,20 +1,20 @@
 import {
   Babs,
   Cameras,
-  Colors,
-  isDefined,
   Lights,
   Models,
   Scenes,
   type ArcRotateCameraOptions,
   type ModelBuilder,
   type ModelPath,
-} from "@mjtdev/engine";
+} from "@mjt-engine/babs";
 import { produce } from "immer";
 import { animateBlink, type EyeControls } from "../animation/animateBlink";
 import type { PhonemeLevels } from "../audio/calculateVisemeLevels";
 import type { Humanoid } from "./Humanoid";
 import { applyGltfModelFixes } from "./applyGltfModelFixes";
+import { Colors } from "@mjt-engine/color";
+import { isDefined } from "@mjt-engine/object";
 
 export const fromGltf = async ({
   path,

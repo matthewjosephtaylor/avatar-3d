@@ -1,6 +1,7 @@
-import { ModelBuilder, Tick } from '@mjtdev/engine';
+import { ModelBuilder } from '@mjt-engine/babs';
 import { VRM } from '@pixiv/three-vrm/types/VRM';
 import { PhonemeLevels } from '../audio/calculateVisemeLevels';
+import { Tick } from '@mjt-engine/animate';
 export type Humanoid = {
     destroy: () => void;
     gltfModel?: ModelBuilder;

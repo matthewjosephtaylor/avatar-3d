@@ -1,4 +1,4 @@
-import { ArcRotateCameraOptions } from '@mjtdev/engine';
+import { ArcRotateCameraOptions } from '@mjt-engine/babs';
 import { Humanoid } from './humanoid/gltf/Humanoid';
 import { VrmCameraOptions } from './humanoid/vrm/createVrmScene';
 export type Avatar3dRef = {

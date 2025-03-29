@@ -1,4 +1,4 @@
-import { isDefined } from "@mjtdev/engine";
+import { isDefined } from "@mjt-engine/object";
 import { useEffect, useState } from "react";
 import {
   initMeyda,

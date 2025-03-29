@@ -1,4 +1,4 @@
-import { Point3 } from '@mjtdev/engine';
+import { Point3 } from '@mjt-engine/math';
 import { OrthographicCamera, Scene, WebGLRenderer } from 'three';
 export type VrmCameraOptions = Partial<{
     position: Point3;

@@ -1,4 +1,4 @@
-import { xOf, yOf, zOf, type Point3 } from "@mjtdev/engine";
+import { xOf, yOf, zOf, type Point3 } from "@mjt-engine/math";
 import {
   AmbientLight,
   DirectionalLight,

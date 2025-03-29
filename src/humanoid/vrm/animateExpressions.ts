@@ -1,4 +1,4 @@
-import { Objects } from "@mjtdev/engine";
+import { Objects } from "@mjt-engine/object";
 import type { VRM } from "@pixiv/three-vrm";
 
 let expressionTimer = 0;

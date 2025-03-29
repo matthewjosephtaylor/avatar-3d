@@ -1,5 +1,5 @@
-import { Objects } from "@mjtdev/engine";
 import type { VRM } from "@pixiv/three-vrm";
+import { Objects } from "@mjt-engine/object";
 
 export class VrmState {
   private vrm: VRM;

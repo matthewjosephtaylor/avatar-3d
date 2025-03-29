@@ -6,8 +6,8 @@ export declare const Humanoids: {
         idleAnimationUrl?: string;
     }) => Promise<import('./gltf/Humanoid').Humanoid>;
     fromGltf: ({ path, canvas, cameraOptions, }: {
-        path: import('@mjtdev/engine').ModelPath;
+        path: import('@mjt-engine/babs').ModelPath;
         canvas: HTMLCanvasElement;
-        cameraOptions?: import('@mjtdev/engine').ArcRotateCameraOptions;
+        cameraOptions?: import('@mjt-engine/babs').ArcRotateCameraOptions;
     }) => Promise<import('./gltf/Humanoid').Humanoid>;
 };

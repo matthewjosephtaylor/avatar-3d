@@ -1,10 +1,9 @@
-import { Animates } from "@mjtdev/engine";
-import { AnimationMixer, WebGLRenderer } from "three";
+import { AnimationMixer } from "three";
 import type { Humanoid } from "../gltf/Humanoid";
 import { createVrmScene, type VrmCameraOptions } from "./createVrmScene";
 import { loadMixamoAnimation } from "./loadMixamoAnimation";
-import { VrmState } from "./vrmState";
 import { updateVrmAudio } from "./updateVrmAudio";
+import { VrmState } from "./vrmState";
 
 export const fromVrm = async ({
   vrmUrl,

@@ -1,4 +1,4 @@
-import { Objects, type ModelBuilder } from "@mjtdev/engine";
+import { type ModelBuilder } from "@mjt-engine/babs";
 
 export const updateGltfAudio = ({
   analyserNode,

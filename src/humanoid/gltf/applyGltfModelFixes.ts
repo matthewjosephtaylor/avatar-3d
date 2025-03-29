@@ -1,6 +1,5 @@
 import type { PBRMaterial } from "@babylonjs/core";
-import type { ModelBuilder } from "@mjtdev/engine";
-
+import type { ModelBuilder } from "@mjt-engine/babs";
 
 export const applyGltfModelFixes = (gltfModel?: ModelBuilder) => {
   if (!gltfModel) {
