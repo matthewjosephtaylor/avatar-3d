@@ -1,6 +1,11 @@
 # Changelog
 
 
+## 2025-03-28
+- transition from mjtdev -> mjt-engine for babs ([45cffa5](https://github.com/matthewjosephtaylor/avatar-3d/commit/45cffa51501e533bde57bc480669efc93b04c0e5)) by Matt Taylor
+- react 19.1 ([741dfb3](https://github.com/matthewjosephtaylor/avatar-3d/commit/741dfb33383aae3b54da962521d7f7f12e45ebab)) by Matt Taylor
+- bumped deps ([43f2781](https://github.com/matthewjosephtaylor/avatar-3d/commit/43f2781af1a54455b4bed1ff984ce4bb48e8e3a5)) by Matt Taylor
+
 ## 2025-01-03
 - update scripts to use pnpm ([4c3f3dd](https://github.com/matthewjosephtaylor/avatar-3d/commit/4c3f3dd693d3e20f4c8fbc5391b46f33c027a47d)) by Matt Taylor
 - introduce pnpm ([9346aaf](https://github.com/matthewjosephtaylor/avatar-3d/commit/9346aaf65fcaba2533d4ebc253657169321127e5)) by Matt Taylor
